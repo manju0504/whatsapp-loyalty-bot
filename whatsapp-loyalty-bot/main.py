@@ -13,20 +13,20 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     incoming_msg = request.values.get('Body', '').strip().lower()
-    user_id = request.values.get('From')
+    user_id = request.values.get('From', '')
     resp = MessagingResponse()
 
     if incoming_msg == "hi":
-        msg = "🎉 Welcome to Dosa Bot! Please enter your full name as per your college ID card."
-        resp.message(msg)
+        resp.message("🎉 Welcome to Dosa Bot! Please enter your full name as per your college ID card.")
     elif incoming_msg == "points":
         pts = get_current_points(user_id)
         reward_msg = give_reward(user_id, pts)
         resp.message(f"🎯 You currently have {pts} points.\n{reward_msg}")
     else:
-        resp.message("❗ Invalid message. Please type 'hi' to begin or 'points' to check your total.")
-
+        resp.message("❗ Invalid message. Please type 'hi' to begin.")
+    
     return str(resp)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+# Run production server
+from waitress import serve
+serve(app, host="0.0.0.0", port=10000)
